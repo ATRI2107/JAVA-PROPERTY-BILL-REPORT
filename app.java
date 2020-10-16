@@ -48,9 +48,9 @@ class expenses
 {
     int property_id;
     String expense;
-    int cost;
+    double cost;
     String date;
-    expenses(int property_id,String expense,int cost,String date)
+    expenses(int property_id,String expense,double cost,String date)
     {
         this.property_id=property_id;
         this.expense=expense;
@@ -73,9 +73,19 @@ class rents
 }
 class PropertyReport
 {
-    HashMap<Integer,clients> cl=new HashMap<>();
-    void read_file(File f)
-    {
+    
+
+}
+class app
+{
+    public static void main(String[] args) {
+
+        File f;
+        f=new File("clients.txt");
+        HashMap<Integer,clients> cl=new HashMap<>();
+        HashMap<Integer,ArrayList<expenses>> exp=new HashMap<>();
+
+        
         try(Scanner sc=new Scanner(f,StandardCharsets.UTF_8.name()))
         {
             while(sc.hasNextLine())
@@ -94,15 +104,33 @@ class PropertyReport
         {
             e.printStackTrace();
         }
-        //System.out.println(cl.get(1).name);
-    }
-}
-class app
-{
-    public static void main(String[] args) {
-        
-        PropertyReport pr=new PropertyReport();
-        pr.read_file(new File("clients.txt"));
-        
+
+        f=new File("expenses.txt");
+        try(Scanner sc=new Scanner(f,StandardCharsets.UTF_8.name()))
+        {
+            while(sc.hasNextLine())
+            {
+                String temp[]=sc.nextLine().split(",");
+                int property_id=Integer.parseInt(temp[0]);
+                String expense=temp[1];
+                double cost=Double.parseDouble(temp[2]);
+                String date=temp[3];
+                if(exp.containsKey(property_id))
+                {
+                    exp.get(property_id).add(new expenses(property_id, expense, cost, date));
+                }
+                else
+                {
+                    ArrayList<expenses> al=new ArrayList<>();
+                    al.add(new expenses(property_id, expense, cost, date));
+                    exp.put(property_id,al);
+                }
+            }
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println(exp.get(3).get(0).expense);
     }
 }
