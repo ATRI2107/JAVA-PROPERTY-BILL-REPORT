@@ -1,5 +1,7 @@
 import java.util.*;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 class clients
 {
     int client_id;
@@ -69,10 +71,38 @@ class rents
         this.date=date;
     }
 }
-
+class PropertyReport
+{
+    HashMap<Integer,clients> cl=new HashMap<>();
+    void read_file(File f)
+    {
+        try(Scanner sc=new Scanner(f,StandardCharsets.UTF_8.name()))
+        {
+            while(sc.hasNextLine())
+            {
+                String temp[]=sc.nextLine().split(",");
+                int client_id=Integer.parseInt(temp[0]);
+                String name=temp[1];
+                String address=temp[2];
+                String suburb=temp[3];
+                String state=temp[4];
+                int postcode=Integer.parseInt(temp[5]);
+                cl.put(client_id,new clients(client_id, name, address, suburb, state, postcode));
+            }
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        //System.out.println(cl.get(1).name);
+    }
+}
 class app
 {
     public static void main(String[] args) {
+        
+        PropertyReport pr=new PropertyReport();
+        pr.read_file(new File("clients.txt"));
         
     }
 }
