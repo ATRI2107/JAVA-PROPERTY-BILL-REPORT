@@ -84,8 +84,9 @@ class app
         f=new File("clients.txt");
         HashMap<Integer,clients> cl=new HashMap<>();
         HashMap<Integer,ArrayList<expenses>> exp=new HashMap<>();
+        HashMap<Integer,properties> prop=new HashMap<>();
+        HashMap<Integer,ArrayList<rents>> re=new HashMap<>();
 
-        
         try(Scanner sc=new Scanner(f,StandardCharsets.UTF_8.name()))
         {
             while(sc.hasNextLine())
@@ -131,6 +132,54 @@ class app
         {
             e.printStackTrace();
         }
-        System.out.println(exp.get(3).get(0).expense);
+        
+        f=new File("properties.txt");
+        try(Scanner sc=new Scanner(f,StandardCharsets.UTF_8.name()))
+        {
+            while(sc.hasNextLine())
+            {
+                String temp[]=sc.nextLine().split(",");
+                int property_id=Integer.parseInt(temp[0]);
+                String address=temp[1];
+                String suburb=temp[2];
+                String state=temp[3];
+                int postcode=Integer.parseInt(temp[4]);
+                int rent=Integer.parseInt(temp[5]);
+                double fee=Double.parseDouble(temp[6]);
+                int client_id=Integer.parseInt(temp[7]);
+                prop.put(property_id,new properties(property_id, address, suburb, state, postcode, rent, fee, client_id));
+            }
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+
+        f=new File("rents.txt");
+        try(Scanner sc=new Scanner(f,StandardCharsets.UTF_8.name()))
+        {
+            while(sc.hasNextLine())
+            {
+                String temp[]=sc.nextLine().split(",");
+                int property_id=Integer.parseInt(temp[0]);
+                int rent_amt=Integer.parseInt(temp[1]);
+                String date=temp[2];
+                if(re.containsKey(property_id))
+                {
+                    re.get(property_id).add(new rents(property_id, rent_amt, date));
+                }
+                else
+                {
+                    ArrayList<rents> al=new ArrayList<>();
+                    al.add(new rents(property_id, rent_amt, date));
+                    re.put(property_id,al);
+                }
+            }
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        System.out.println(re.get(11).get(2).date);
     }
 }
