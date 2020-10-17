@@ -75,7 +75,9 @@ class rents
 class PropertyReport
 {
     HashMap<Integer,properties> prop2=new HashMap<>();
-    void record_rent_collection(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
+    ArrayList<rents> rent_result=new ArrayList<>();
+    ArrayList<expenses> expense_result=new ArrayList<>();
+    void property_search(HashMap<Integer,ArrayList<properties>> prop)
     {
         Scanner sc=new Scanner(System.in);
         
@@ -126,6 +128,11 @@ class PropertyReport
                 
             }
         }
+    }
+    void record_rent_collection(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
+    {
+        Scanner sc=new Scanner(System.in);
+        property_search(prop);   
         System.out.println();
         System.out.print("Enter the Property Id of your choice from the given options above : ");
         int pid=sc.nextInt();
@@ -150,9 +157,52 @@ class PropertyReport
         System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------");
         System.out.println(p.address+"          "+p.rent+"                  "+weeks+"                "+cl.get(p.client_id).name+"             "+(weeks*p.rent)+"                 "+curr_date);
         System.out.println();
+        rent_result.add(new rents(p.property_id, weeks*p.rent, curr_date));
         menu(cl, exp, prop, re);
     }
-    
+    void record_expenses(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
+    {
+        Scanner sc=new Scanner(System.in);
+        property_search(prop);
+        System.out.print("Enter the Property Id of your choice from the given options above : ");
+        int pid=sc.nextInt();
+        System.out.println();
+        properties p=prop2.get(pid);
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("Property Address   Property Weekly Rent   Property Owner Name");
+        System.out.println("-------------------------------------------------------------");
+        System.out.println(p.address+"          "+p.rent+"                  "+cl.get(p.client_id).name);
+        System.out.println();
+        Date d=new Date();
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-mm-dd");
+        String curr_date=formatter.format(d);
+        System.out.println();
+        System.out.println("Enter Expense Description");
+        sc.nextLine();
+        String expense=sc.nextLine();
+        System.out.println("Enter Expense Amount");
+        double cost=sc.nextDouble();
+        if(exp.containsKey(pid))
+        {
+            exp.get(pid).add(new expenses(pid, expense, cost, curr_date));
+        }
+        else 
+        {
+            ArrayList<expenses> al=new ArrayList<>();
+            al.add(new expenses(pid, expense, cost, curr_date));
+            exp.put(pid,al);
+        }
+        expense_result.add(new expenses(pid, expense, cost, curr_date));
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("                                    SUMMMARY                                                      ");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("Property Address   Monetary Amount   Description of Expense     Property Owner Name                   Date");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println(p.address+"          "+cost+"                  "+expense+"             "+cl.get(p.client_id).name+"               "+curr_date);
+        System.out.println();
+        menu(cl, exp, prop, re);
+    }
+
     void menu(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
     {
         Scanner sc=new Scanner(System.in);
@@ -172,6 +222,9 @@ class PropertyReport
         {
             case 1:
                 record_rent_collection(cl, exp, prop, re);
+            break;
+            case 2:
+                record_expenses(cl, exp, prop, re);
             break;
 
         }
