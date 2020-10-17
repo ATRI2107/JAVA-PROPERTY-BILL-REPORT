@@ -73,8 +73,73 @@ class rents
 }
 class PropertyReport
 {
+    void record_rent_collection(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
+    {
+        Scanner sc=new Scanner(System.in);
+       
+        System.out.println("Enter the address you want to find property details for: ");
+        String address_search[]=sc.nextLine().split(" ");
+        for(Map.Entry<Integer,ArrayList<properties>> m:prop.entrySet())
+        {
+            
+            ArrayList<properties> temp=m.getValue();
+            for(properties p:temp)
+            {
+                String check_address[]=p.address.split(" ");
+                HashMap<String,Integer> index=new HashMap<>();
+                for(int i=0;i<check_address.length;i++)
+                {
+                    index.put(check_address[i],i);
+                }
+                
+                
+                boolean check=false;
+                ArrayList<Integer> index_check=new ArrayList<>();
+                for(String s:address_search)
+                {
+                    index_check.add(index.getOrDefault(s, -1));
+                }
+                if(index_check.size()==1 && index_check.get(0)!=-1) check=true;
+                else
+                {
+                    for(int j=1;j<index_check.size();j++)
+                    {
+                        
+                        if(index_check.get(j)-index_check.get(j-1)==1) check=true;
+                        else
+                        {
+                            check=false;
+                            break;
+                        }
+                    }
+                } 
+               
+                
+            }
+        }
+    }
     
+    void menu(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
+    {
+        Scanner sc=new Scanner(System.in);
+        int choice;
 
+        System.out.println("Enter your choice:");
+        System.out.println("1. Record Rent Collection ");
+        System.out.println("2. Record Expenses ");
+        System.out.println("3. Portfolio Report ");
+        System.out.println("4. Save ");
+        System.out.println("5. Exit");
+
+        choice=sc.nextInt();
+        switch(choice)
+        {
+            case 1:
+                record_rent_collection(cl, exp, prop, re);
+            break;
+
+        }
+    }
 }
 class app
 {
@@ -82,9 +147,10 @@ class app
 
         File f;
         f=new File("clients.txt");
+        PropertyReport pr=new PropertyReport();
         HashMap<Integer,clients> cl=new HashMap<>();
         HashMap<Integer,ArrayList<expenses>> exp=new HashMap<>();
-        HashMap<Integer,properties> prop=new HashMap<>();
+        HashMap<Integer,ArrayList<properties>> prop=new HashMap<>();
         HashMap<Integer,ArrayList<rents>> re=new HashMap<>();
 
         try(Scanner sc=new Scanner(f,StandardCharsets.UTF_8.name()))
@@ -147,7 +213,16 @@ class app
                 int rent=Integer.parseInt(temp[5]);
                 double fee=Double.parseDouble(temp[6]);
                 int client_id=Integer.parseInt(temp[7]);
-                prop.put(property_id,new properties(property_id, address, suburb, state, postcode, rent, fee, client_id));
+                if(prop.containsKey(client_id))
+                {
+                    prop.get(client_id).add(new properties(property_id, address, suburb, state, postcode, rent, fee, client_id));
+                }
+                else 
+                {
+                    ArrayList<properties> al=new ArrayList<>();
+                    al.add(new properties(property_id, address, suburb, state, postcode, rent, fee, client_id));
+                    prop.put(client_id,al);
+                }
             }
         }
         catch(IOException e)
@@ -180,6 +255,6 @@ class app
         {
             e.printStackTrace();
         }
-        System.out.println(re.get(11).get(2).date);
+       pr.menu(cl, exp, prop, re);
     }
 }
