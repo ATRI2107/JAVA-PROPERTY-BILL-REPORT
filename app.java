@@ -2,6 +2,7 @@ import java.util.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 class clients
 {
     int client_id;
@@ -73,12 +74,16 @@ class rents
 }
 class PropertyReport
 {
+    HashMap<Integer,properties> prop2=new HashMap<>();
     void record_rent_collection(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
     {
         Scanner sc=new Scanner(System.in);
-       
+        
         System.out.println("Enter the address you want to find property details for: ");
         String address_search[]=sc.nextLine().split(" ");
+        System.out.println("-------------------------------------");
+        System.out.println("Property ID     ||   Property Address");
+        System.out.println("-------------------------------------");
         for(Map.Entry<Integer,ArrayList<properties>> m:prop.entrySet())
         {
             
@@ -91,8 +96,6 @@ class PropertyReport
                 {
                     index.put(check_address[i],i);
                 }
-                
-                
                 boolean check=false;
                 ArrayList<Integer> index_check=new ArrayList<>();
                 for(String s:address_search)
@@ -113,10 +116,41 @@ class PropertyReport
                         }
                     }
                 } 
-               
+                if(check)
+                {
+                    prop2.put(p.property_id,p);
+                    System.out.println(p.property_id+"                  "+p.address);
+                }
+                
+                
                 
             }
         }
+        System.out.println();
+        System.out.print("Enter the Property Id of your choice from the given options above : ");
+        int pid=sc.nextInt();
+        System.out.println();
+        properties p=prop2.get(pid);
+        System.out.println("-------------------------------------------------------------");
+        System.out.println("Property Address   Property Weekly Rent   Property Owner Name");
+        System.out.println("-------------------------------------------------------------");
+        System.out.println(p.address+"          "+p.rent+"                  "+cl.get(p.client_id).name);
+        System.out.println();
+        System.out.print("Enter the number of weeks you want to collect rent for : ");
+        int weeks=sc.nextInt();
+        System.out.println();
+        Date d=new Date();
+        SimpleDateFormat formatter=new SimpleDateFormat("yyyy-mm-dd");
+        String curr_date=formatter.format(d);
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("                                    SUMMMARY                                                      ");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println("Property Address   Property Weekly Rent   Number Of Weeks     Property Owner Name        Rent Collected            Date");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------");
+        System.out.println(p.address+"          "+p.rent+"                  "+weeks+"                "+cl.get(p.client_id).name+"             "+(weeks*p.rent)+"                 "+curr_date);
+        System.out.println();
+        menu(cl, exp, prop, re);
     }
     
     void menu(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
@@ -125,13 +159,15 @@ class PropertyReport
         int choice;
 
         System.out.println("Enter your choice:");
+        System.out.println();
         System.out.println("1. Record Rent Collection ");
         System.out.println("2. Record Expenses ");
         System.out.println("3. Portfolio Report ");
         System.out.println("4. Save ");
         System.out.println("5. Exit");
-
+        System.out.println();
         choice=sc.nextInt();
+        System.out.println();
         switch(choice)
         {
             case 1:
