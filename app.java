@@ -215,6 +215,7 @@ class PropertyReport
     }
     void print_report(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re,clients c)
     {
+                if(!prop.containsKey(c.client_id)) return;
                 System.out.println("Generating report for "+c.name+" ....");
                 System.out.println();
                 System.out.println("PORTFOLIO REPORT");
@@ -230,16 +231,24 @@ class PropertyReport
                 for(properties p: prop.get(c.client_id))
                 {
                     double total_rent=0.0;
-                    for(rents r:re.get(p.property_id))
+                    if(re.containsKey(p.property_id))
                     {
-                        total_rent+=r.rent_amt*1.0;
+                        for(rents r:re.get(p.property_id))
+                        {
+                            total_rent+=r.rent_amt*1.0;
+                        }
                     }
+                    
                     total_rent_client+=total_rent;
                     double total_expenses=0.0;
-                    for(expenses e:exp.get(p.property_id))
+                    if(exp.containsKey(p.property_id))
                     {
-                        total_expenses+=e.cost*1.0;
+                            for(expenses e:exp.get(p.property_id))
+                            {
+                                total_expenses+=e.cost*1.0;
+                            }
                     }
+                    
                     total_expenses_client+=total_expenses;
                     double fee_rate=p.fee;
                     double fees=fee_rate*total_rent;
@@ -269,6 +278,31 @@ class PropertyReport
                 print_report(cl, exp, prop, re, m.getValue());
             }
         }
+        menu(cl, exp, prop, re);
+    }
+    void all_client(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
+    {
+        LinkedHashMap<Integer,clients> cl_sorted=new LinkedHashMap<>();
+        ArrayList<Map.Entry<Integer,clients>> al=new ArrayList<Map.Entry<Integer,clients>>(cl.entrySet());
+        Collections.sort(al,new Comparator<Map.Entry<Integer,clients>>(){
+            public int compare(Map.Entry<Integer,clients> m1,Map.Entry<Integer,clients> m2)
+            {
+                clients c1=m1.getValue();
+                clients c2=m2.getValue();
+                String c1_last[]=c1.name.split(" ");
+                String c2_last[]=c2.name.split(" ");
+                return c1_last[c1_last.length-1].compareTo(c2_last[c2_last.length-1]);
+            }
+        });
+        for(Map.Entry<Integer,clients> m:al)
+        {
+            cl_sorted.put(m.getKey(),m.getValue());
+        }
+        for(Map.Entry<Integer,clients> m:cl_sorted.entrySet())
+        {
+            print_report(cl, exp, prop, re, m.getValue());
+        }
+        menu(cl, exp, prop, re);
     }
     void portfolio_report(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
     {
@@ -284,7 +318,9 @@ class PropertyReport
             case 1:
                 specific_client(cl, exp, prop, re);
                 break;
-
+            case 2:
+                all_client(cl, exp, prop, re);
+                break;
         }
     }
     void menu(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
