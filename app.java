@@ -3,7 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-
+import java.io.*;
 class clients
 {
     int client_id;
@@ -395,6 +395,45 @@ class PropertyReport
                 break;
         }
     }
+    void save_rent()
+    {
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter("rents.txt", true)))
+        {
+            for(rents r:rent_result)
+            {
+                String res=String.valueOf(r.property_id)+","+String.valueOf(r.rent_amt)+","+r.date;
+                writer.write(res);
+            }
+            writer.close();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+        
+    }
+    void save_expense()
+    {
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter("expenses.txt", true)))
+        {
+            for(expenses e: expense_result)
+            {
+                String res=String.valueOf(e.property_id)+","+e.expense+","+String.valueOf(e.cost)+","+e.date;
+                writer.write(res);
+            }
+            writer.close();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
+        }
+    }
+    void save(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
+    {
+        save_rent();
+        save_expense();
+        menu(cl, exp, prop, re);
+    }
     void menu(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
     {
         Scanner sc=new Scanner(System.in);
@@ -421,6 +460,16 @@ class PropertyReport
             case 3:
                 portfolio_report(cl, exp, prop, re);
             break;
+            case 4:
+                save(cl, exp, prop, re);
+                break;
+            case 5:
+                System.out.println("Bye....");
+                System.exit(0);
+                break;
+            default:
+                System.out.println("Please Enter a valid option");
+                menu(cl, exp, prop, re);
 
         }
     }
