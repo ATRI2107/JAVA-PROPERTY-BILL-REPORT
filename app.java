@@ -261,6 +261,56 @@ class PropertyReport
                 System.out.println("|                             TOTAL| "+total_rent_client+" |    "+total_expenses_client+" |               |      "+total_fees_client+" |   "+total_net_client+" |");
                 System.out.println("--------------------------------------------------------------------------------------------------");
     }
+    void print_report_postcode(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re,properties pr)
+    {
+                if(!prop.containsKey(pr.client_id)) return;
+                clients c=cl.get(pr.client_id);
+                System.out.println("Generating report for "+c.name+" ....");
+                System.out.println();
+                System.out.println("PORTFOLIO REPORT");
+                System.out.println("Client: "+c.name+" , "+c.address+" "+c.suburb+" "+c.state+" "+c.postcode);
+                long millis=System.currentTimeMillis();  
+                Date date=new Date(millis);    
+                System.out.println("Report Generated : "+date);
+                System.out.println();
+                System.out.println("--------------------------------------------------------------------------------------------------");
+                System.out.println("|                         Property |   Rent |     Expenses |     Fee Rate |      Fees |      Net |");
+                System.out.println("--------------------------------------------------------------------------------------------------");
+                double total_rent_client=0.0,total_expenses_client=0.0,total_fees_client=0.0,total_net_client=0.0;
+                for(properties p: prop.get(c.client_id))
+                {
+                    if(p.postcode!=pr.postcode) continue;
+                    double total_rent=0.0;
+                    if(re.containsKey(p.property_id))
+                    {
+                        for(rents r:re.get(p.property_id))
+                        {
+                            total_rent+=r.rent_amt*1.0;
+                        }
+                    }
+                    
+                    total_rent_client+=total_rent;
+                    double total_expenses=0.0;
+                    if(exp.containsKey(p.property_id))
+                    {
+                            for(expenses e:exp.get(p.property_id))
+                            {
+                                total_expenses+=e.cost*1.0;
+                            }
+                    }
+                    
+                    total_expenses_client+=total_expenses;
+                    double fee_rate=p.fee;
+                    double fees=fee_rate*total_rent;
+                    total_fees_client+=fees;
+                    double net=total_rent-total_expenses-fees;
+                    total_net_client+=net;
+                    System.out.println("|  "+p.address+"  |  "+total_rent+"|    "+total_expenses+"  |    "+fee_rate+"      |  "+fees+"     |  "+net+" |");
+                }
+                System.out.println("--------------------------------------------------------------------------------------------------");
+                System.out.println("|                             TOTAL| "+total_rent_client+" |    "+total_expenses_client+" |               |      "+total_fees_client+" |   "+total_net_client+" |");
+                System.out.println("--------------------------------------------------------------------------------------------------");
+    }
     void specific_client(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
     {
         System.out.println();
@@ -304,6 +354,25 @@ class PropertyReport
         }
         menu(cl, exp, prop, re);
     }
+    void specific_postcode(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
+    {
+        Scanner sc=new Scanner(System.in);
+        System.out.println();
+        System.out.print("Enter the postcode : ");
+        int postcode=sc.nextInt();
+        System.out.println();
+        for(Map.Entry<Integer,ArrayList<properties>> m:prop.entrySet())
+        {
+            for(properties p:m.getValue())
+            {
+                if(p.postcode==postcode)
+                {
+                    print_report_postcode(cl, exp, prop, re, p);
+                }
+            }
+        }
+        menu(cl, exp, prop, re);
+    }
     void portfolio_report(HashMap<Integer,clients> cl,HashMap<Integer,ArrayList<expenses>> exp,HashMap<Integer,ArrayList<properties>> prop,HashMap<Integer,ArrayList<rents>> re)
     {
         Scanner sc=new Scanner(System.in);
@@ -320,6 +389,9 @@ class PropertyReport
                 break;
             case 2:
                 all_client(cl, exp, prop, re);
+                break;
+            case 3:
+                specific_postcode(cl, exp, prop, re);
                 break;
         }
     }
