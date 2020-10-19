@@ -1,10 +1,11 @@
+import clients.clients;
 import java.util.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.io.*;
-class clients
+/*class clients
 {
     int client_id;
     String name;
@@ -21,7 +22,7 @@ class clients
         this.state=state;
         this.postcode=postcode;
     }
-}
+}*/
 
 class properties
 {
