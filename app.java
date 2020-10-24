@@ -338,6 +338,7 @@ class PropertyReport
             for(rents r:rent_result)
             {
                 String res=String.valueOf(r.property_id)+","+String.valueOf(r.rent_amt)+","+r.date;
+                writer.newLine();
                 writer.write(res);
             }
             writer.close();
@@ -355,6 +356,7 @@ class PropertyReport
             for(expenses e: expense_result)
             {
                 String res=String.valueOf(e.property_id)+","+e.expense+","+String.valueOf(e.cost)+","+e.date;
+                writer.newLine();
                 writer.write(res);
             }
             writer.close();
